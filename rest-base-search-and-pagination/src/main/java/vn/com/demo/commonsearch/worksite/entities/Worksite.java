@@ -1,4 +1,4 @@
-package vn.com.demo.commonsearch.entities;
+package vn.com.demo.commonsearch.worksite.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

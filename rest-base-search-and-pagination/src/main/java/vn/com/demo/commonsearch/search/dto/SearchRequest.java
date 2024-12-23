@@ -28,7 +28,6 @@ public class SearchRequest {
     public static class Sort {
         private String field;
         private boolean asc;
-        private boolean ignoreCase;
     }
 
     @Getter

@@ -1,9 +1,11 @@
-package vn.com.demo.commonsearch.services;
+package vn.com.demo.commonsearch.search.service;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import vn.com.demo.commonsearch.base.BaseEntity;
 import vn.com.demo.commonsearch.search.dto.SearchRequest;
@@ -14,6 +16,7 @@ public class SearchSpecification<T extends BaseEntity> implements Specification<
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+
         return null;
     }
 }
