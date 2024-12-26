@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Getter
 @Setter
-public class BaseEntity {
+public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,4 +29,6 @@ public class BaseEntity {
     private LocalDateTime updatedAt;
 
     private boolean isDeleted;
+
+    protected abstract Class<? extends BaseEntity> getEntityClass();
 }

@@ -10,13 +10,19 @@ import org.springframework.data.jpa.domain.Specification;
 import vn.com.demo.commonsearch.base.BaseEntity;
 import vn.com.demo.commonsearch.search.dto.SearchRequest;
 
-public class SearchSpecification<T extends BaseEntity> implements Specification<T> {
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
-    private SearchRequest searchRequest;
+public class SearchSpecification<T extends BaseEntity> {
 
-    @Override
-    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    private Class<T> entityClass;
 
-        return null;
+    public Specification<T> getSpecification(SearchRequest searchRequest) {
+        return ((root, query, criteriaBuilder) -> {
+            Class<?> rootType = root.getClass();
+            System.out.println(rootType);
+            return null;
+
+        });
     }
 }

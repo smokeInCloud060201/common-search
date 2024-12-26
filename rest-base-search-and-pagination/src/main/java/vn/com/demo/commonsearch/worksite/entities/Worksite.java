@@ -8,4 +8,9 @@ import vn.com.demo.commonsearch.base.BaseEntity;
 @Entity
 public class Worksite extends BaseEntity {
     private String location;
+
+    @Override
+    protected Class<? extends BaseEntity> getEntityClass() {
+        return Worksite.class;
+    }
 }

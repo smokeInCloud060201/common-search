@@ -8,7 +8,4 @@ public class SearchRequestMapper {
 
     private SearchRequest searchRequest;
 
-    public SearchSpecification<?> mapToSpecification() {
-
-    }
 }
