@@ -23,7 +23,7 @@ public class WorksiteService implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        SearchSpecification<Worksite> searchSpec = new SearchSpecification<>();
-        searchSpec.getSpecification(null);
+//        SearchSpecification<Worksite> searchSpec = new SearchSpecification<>();
+//        searchSpec.getSpecification(null);
     }
 }

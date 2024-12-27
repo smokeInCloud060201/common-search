@@ -15,20 +15,18 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class BaseEntity {
+public class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    protected Long id;
 
     @CreationTimestamp
     @Setter(AccessLevel.NONE)
-    private LocalDateTime createdAt;
+    protected LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Setter(AccessLevel.NONE)
-    private LocalDateTime updatedAt;
+    protected LocalDateTime updatedAt;
 
-    private boolean isDeleted;
-
-    protected abstract Class<? extends BaseEntity> getEntityClass();
+    protected boolean isDeleted;
 }

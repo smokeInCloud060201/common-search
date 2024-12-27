@@ -1,28 +1,32 @@
 package vn.com.demo.commonsearch.search.service;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 import vn.com.demo.commonsearch.base.BaseEntity;
-import vn.com.demo.commonsearch.search.dto.SearchRequest;
+import vn.com.demo.commonsearch.search.manager.JoinManager;
+import vn.com.demo.commonsearch.search.manager.proxy.FieldEntityManagerProxy;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+@AllArgsConstructor
+@Component
+public class SearchSpecification {
 
-public class SearchSpecification<T extends BaseEntity> {
+    private final FieldEntityManagerProxy fieldEntityManagerProxy;
 
-    private Class<T> entityClass;
-
-    public Specification<T> getSpecification(SearchRequest searchRequest) {
-        return ((root, query, criteriaBuilder) -> {
-            Class<?> rootType = root.getClass();
-            System.out.println(rootType);
-            return null;
-
-        });
-    }
+//    private JoinManager joinManager;
+//
+//
+//    public Specification<T> getSearchSpecification(String searchKey) {
+//        if (StringUtils.isEmpty(searchKey)) {
+//            return null;
+//        }
+//
+//        searchKey = searchKey.toLowerCase();
+//        return (root, query, criteriaBuilder) -> {
+//            return null;
+//        };
+//    }
 }

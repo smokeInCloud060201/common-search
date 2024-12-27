@@ -1,4 +1,4 @@
-package vn.com.demo.commonsearch.services.impl;
+package vn.com.demo.commonsearch.search.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

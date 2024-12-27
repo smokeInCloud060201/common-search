@@ -24,15 +24,19 @@ public class SearchRequest {
 
     private List<Filter> filterList;
 
+    @Setter
     @Getter
     public static class Sort {
         private String field;
         private boolean asc;
     }
 
+    @Setter
     @Getter
     public static class Filter {
         private String field;
-        private String value;
+        private Object value;
+        private Operator operator;
+        private Type type;
     }
 }
