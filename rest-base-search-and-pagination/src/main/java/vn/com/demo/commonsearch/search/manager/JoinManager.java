@@ -1,6 +1,7 @@
 package vn.com.demo.commonsearch.search.manager;
 
 import jakarta.persistence.criteria.Join;
+import vn.com.demo.commonsearch.base.BaseEntity;
 
 import java.util.HashMap;
 import java.util.Map;

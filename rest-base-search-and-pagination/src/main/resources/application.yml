@@ -4,7 +4,7 @@ spring:
   application:
     name: Rest Base Searching
   datasource:
-    url: jdbc:postgresql://localhost:5434/race
+    url: jdbc:postgresql://localhost:5433/race
     password: admin123
     username: root
   jpa:

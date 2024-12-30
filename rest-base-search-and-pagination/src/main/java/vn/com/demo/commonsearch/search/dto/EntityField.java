@@ -9,27 +9,31 @@ import java.util.Collections;
 import java.util.List;
 
 
+@Getter
 public class EntityField {
 
     public EntityField(Field field) {
+        field.setAccessible(true);
         this.field = field;
+        fieldType = field.getType();
+        fieldName = field.getName();
         if (field.isAnnotationPresent(IncludeSearchKey.class)) {
-            this.searchable = true;
-
             IncludeSearchKey includeSearchKey = field.getAnnotation(IncludeSearchKey.class);
             this.searchList = List.of(includeSearchKey.value());
+            this.searchable = !searchList.isEmpty();
         } else {
             this.searchable = false;
             this.searchList = Collections.emptyList();
         }
     }
 
-    @Getter
     private final Field field;
 
-    @Getter
     private final boolean searchable;
 
-    @Getter
     private final List<String> searchList;
+
+    private final Class<?> fieldType;
+
+    private final String fieldName;
 }

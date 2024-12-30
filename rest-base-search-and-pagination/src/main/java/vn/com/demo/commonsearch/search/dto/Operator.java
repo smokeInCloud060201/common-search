@@ -7,7 +7,10 @@ public final class Operator {
         LESS,
         GRATER_EQUAL,
         LESS_EQUAL,
-        NOT_EQUAL
+        NOT_EQUAL,
+        IN,
+        LIKE,
+        NOT_LIKE
     }
 
     public enum Logical {
