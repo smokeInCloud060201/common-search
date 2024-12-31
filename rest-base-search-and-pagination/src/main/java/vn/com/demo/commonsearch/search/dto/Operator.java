@@ -5,7 +5,7 @@ public final class Operator {
         EQUAL,
         GREATER,
         LESS,
-        GRATER_EQUAL,
+        GREATER_EQUAL,
         LESS_EQUAL,
         NOT_EQUAL,
         IN,

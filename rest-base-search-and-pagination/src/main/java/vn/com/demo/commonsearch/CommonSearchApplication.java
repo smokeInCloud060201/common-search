@@ -11,7 +11,7 @@ import vn.com.demo.commonsearch.worksite.repository.WorksiteRepository;
 @SpringBootApplication
 @EnableCaching
 @RequiredArgsConstructor
-public class CommonSearchApplication implements CommandLineRunner {
+public class CommonSearchApplication {
 	
 	private final WorksiteRepository repository;
 
@@ -19,15 +19,4 @@ public class CommonSearchApplication implements CommandLineRunner {
 		SpringApplication.run(CommonSearchApplication.class, args);
 	}
 
-	@Override
-	public void run(String... args) throws Exception {
-
-
-		for (int i = 0; i < 10; i++) {
-			Worksite worksite = new Worksite();
-			worksite.setLocation("location" + i);
-			repository.save(worksite);
-		}
-
-	}
 }

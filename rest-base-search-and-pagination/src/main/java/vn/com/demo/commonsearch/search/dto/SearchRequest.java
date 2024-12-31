@@ -1,6 +1,7 @@
 package vn.com.demo.commonsearch.search.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,10 +34,11 @@ public class SearchRequest {
 
     @Setter
     @Getter
+    @Builder
     public static class Filter {
         private String field;
         private Object value;
-        private Operator operator;
+        private Operator.Comparison operator;
         private Type type;
     }
 }

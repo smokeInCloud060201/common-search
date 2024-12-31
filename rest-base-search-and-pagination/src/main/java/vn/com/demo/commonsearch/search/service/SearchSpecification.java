@@ -1,6 +1,5 @@
 package vn.com.demo.commonsearch.search.service;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -8,12 +7,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import vn.com.demo.commonsearch.base.BaseEntity;
 import vn.com.demo.commonsearch.search.dto.EntityField;
+import vn.com.demo.commonsearch.search.dto.Operator;
 import vn.com.demo.commonsearch.search.dto.SearchRequest;
+import vn.com.demo.commonsearch.search.dto.Type;
 import vn.com.demo.commonsearch.search.manager.JoinManager;
 import vn.com.demo.commonsearch.search.manager.proxy.FieldEntityManagerProxy;
+import vn.com.demo.commonsearch.search.util.PredicateUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class SearchSpecification {
 
     private final FieldEntityManagerProxy fieldEntityManagerProxy;
 
-    private <T> Specification<T> getAllSpecifications(SearchRequest searchRequest, Class<? extends BaseEntity> rootClazz) {
+    public <T> Specification<T> getAllSpecifications(SearchRequest searchRequest, Class<? extends BaseEntity> rootClazz) {
         final JoinManager joinManager = new JoinManager();
         Specification<T> specification = getSearchSpecification(searchRequest.getSearchAllKey(), joinManager, rootClazz);
 
@@ -40,18 +41,23 @@ public class SearchSpecification {
 
         List<EntityField> fields =  fieldEntityManagerProxy.getEntityFieldOfEntity(rootClazz.getSimpleName()).stream()
                 .filter(EntityField::isSearchable).toList();
+
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             for (EntityField field : fields) {
                 List<String> listSearchKey = field.getSearchList();
+                List<SearchRequest.Filter> filterList = listSearchKey.stream().map(s -> SearchRequest.Filter.builder()
+                        .type(Type.TEXT)
+                        .value(searchKey)
+                        .operator(Operator.Comparison.IN)
+                        .field(s)
+                        .build())
+                        .toList();
                 if (!listSearchKey.isEmpty()) {
-                    List<List<String>> nestedKeySearch = listSearchKey.stream()
-                            .map(s -> Arrays.asList(s.split("\\.")))
-                            .toList();
 
-                    for (int i = 0; i < ; i++) {
-                        
+                    for (SearchRequest.Filter filter : filterList) {
+                        predicates.add(PredicateUtil.toPredicate(root, query, criteriaBuilder, joinManager, filter));
                     }
                 } else {
                     predicates.add(criteriaBuilder.equal(

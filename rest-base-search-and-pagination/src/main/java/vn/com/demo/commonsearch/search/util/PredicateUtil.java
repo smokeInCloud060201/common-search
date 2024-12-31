@@ -1,16 +1,10 @@
 package vn.com.demo.commonsearch.search.util;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.demo.commonsearch.base.BaseEntity;
-import vn.com.demo.commonsearch.search.dto.Operator;
+import vn.com.demo.commonsearch.search.dto.SearchRequest;
 import vn.com.demo.commonsearch.search.manager.JoinManager;
 
 import java.time.LocalDateTime;
@@ -19,162 +13,90 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.hibernate.grammars.hql.HqlParser.GREATER_EQUAL;
 import static vn.com.demo.commonsearch.constants.DateTimeConstants.LOCAL_DATE_TIME_FORMAT;
-import static vn.com.demo.commonsearch.search.dto.Operator.Comparison.GREATER;
 import static vn.com.demo.commonsearch.search.dto.Operator.Comparison.IN;
-import static vn.com.demo.commonsearch.search.dto.Operator.Comparison.LESS;
-import static vn.com.demo.commonsearch.search.dto.Operator.Comparison.LESS_EQUAL;
-import static vn.com.demo.commonsearch.search.dto.Operator.Comparison.LIKE;
-import static vn.com.demo.commonsearch.search.dto.Operator.Comparison.NOT_EQUAL;
 import static vn.com.demo.commonsearch.search.dto.Operator.Comparison.NOT_LIKE;
-import static vn.com.demo.commonsearch.search.dto.Type.BOOLEAN;
-import static vn.com.demo.commonsearch.search.dto.Type.DATE_TIME;
-import static vn.com.demo.commonsearch.search.dto.Type.ENUM;
-import static vn.com.demo.commonsearch.search.dto.Type.NUMERIC;
 import static vn.com.demo.commonsearch.search.dto.Type.TEXT;
 
 @Slf4j
 public class PredicateUtil {
 
-    public Predicate toPredicate(
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(LOCAL_DATE_TIME_FORMAT);
+
+    public static Predicate toPredicate(
             Root<?> root,
             CriteriaQuery<?> criteriaQuery,
             CriteriaBuilder builder,
-            JoinManager joinManager) {
+            JoinManager joinManager,
+            SearchRequest.Filter filterCriteria) {
 
-        if (filterCriteria == null) return builder.equal(builder.literal(1), 1);
-
-        // find nested field with pattern string.string
-        int nestedLevel = StringUtils.countMatches(filterCriteria.getField(), ".");
-        if (nestedLevel > 0) {
-            String fullField = filterCriteria.getField();
-            String[] fields = fullField.split("\\.");
-            // TODO: Add field to filterCriteria to specify which type of join
-            Join<E, BaseEntity> join = root.join(fields[0], JoinType.INNER);
-            if (nestedLevel == 1) {
-                return getPredicate(root, builder, join.get(fields[1]));
-            }
-            Join<BaseEntity, BaseEntity> joinNext = join.join(fields[1], JoinType.INNER);
-            if (nestedLevel == 2) {
-                return getPredicate(root, builder, joinNext.get(fields[2]));
-            }
-            for (int i = 2; i < nestedLevel; i++) {
-                joinNext = joinNext.join(fields[i], JoinType.INNER);
-            }
-            return getPredicate(root, builder, joinNext.get(fields[fields.length - 1]));
+        if (filterCriteria == null) {
+            return builder.conjunction();
         }
-        return getPredicate(root, builder, handleField(root, builder));
+
+        String[] fields = splitField(filterCriteria.getField());
+        Expression<?> expression = resolveExpression(root, builder, fields);
+        return createPredicate(root, builder, expression, filterCriteria);
     }
 
-    /**
-     * Return the predicate that combine the field, operator and value
-     */
-    private <Y extends Comparable<? super Y>> Predicate getPredicate(Root<E> root, CriteriaBuilder builder, Expression<? extends Y> expression) {
-        if (filterCriteria.getOperator().equals(Operator.)) {
-            Object trueValue = handleValue();
-            return this.handleOperator(builder, (Expression<ComparableHashSet<Y>>) expression, new ComparableHashSet<>((HashSet<Y>) trueValue));
+    private static String[] splitField(String field) {
+        return StringUtils.split(field, ".");
+    }
+
+    private static Expression<?> resolveExpression(Root<?> root, CriteriaBuilder builder, String[] fields) {
+        Join<?, BaseEntity> join = null;
+
+        for (int i = 0; i < fields.length - 1; i++) {
+            join = (join == null) ? root.join(fields[i], JoinType.INNER) : join.join(fields[i], JoinType.INNER);
         }
-        Expression<? extends Y> truePath = expression == null ? handleField(root, builder) : expression;
+
+        return (join != null) ? join.get(fields[fields.length - 1]) : root.get(fields[fields.length - 1]);
+    }
+
+    private static Predicate createPredicate(Root<?> root, CriteriaBuilder builder, Expression<?> expression, SearchRequest.Filter filterCriteria) {
         try {
-            Object trueValue = handleValue();
-            return this.handleOperator(builder, truePath, (Y) trueValue);
-        } catch (NumberFormatException ex) {
-            log.error(ex.getMessage());
+            Object value = parseValue(filterCriteria);
+            return applyOperator(builder, expression, value, filterCriteria);
+        } catch (Exception e) {
+            log.error("Error processing filter: {} with value: {}", filterCriteria.getField(), filterCriteria.getValue(), e);
             return builder.disjunction();
         }
     }
 
-    private <Y> Expression<Y> handleField(Root<E> root, CriteriaBuilder builder) {
-        if (filterCriteria.getType() == TEXT && !filterCriteria.getOperator().equals(IN)) {
-            return (Expression<Y>) builder.upper(root.get(filterCriteria.getField()));
-        } else {
-            return root.get(filterCriteria.getField());
+    private static Object parseValue(SearchRequest.Filter filterCriteria) {
+        if (filterCriteria.getOperator() == IN) {
+            return new HashSet<>((Collection<?>) filterCriteria.getValue());
         }
+
+        String valueStr = String.valueOf(filterCriteria.getValue());
+        return switch (filterCriteria.getType()) {
+            case NUMERIC -> Long.parseLong(valueStr);
+            case DATE_TIME -> LocalDateTime.parse(valueStr, DATE_TIME_FORMATTER);
+            case BOOLEAN -> Boolean.parseBoolean(valueStr);
+            case ENUM -> Enum.valueOf((Class<Enum>) filterCriteria.getValue().getClass(), valueStr);
+            default -> (filterCriteria.getType() == TEXT) ? valueStr.toUpperCase() : valueStr;
+        };
     }
 
-    private Object handleValue() throws NumberFormatException {
-        String filterCriteriaValueStr = filterCriteria.getValue().toString();
-        if (filterCriteria.getOperator().equals(Operator.IN)) {
-            return filterCriteria.getValue() == null ? null : new HashSet<>((Collection<?>) filterCriteria.getValue());
-        }
-        switch (filterCriteria.getType()) {
-            case NUMERIC -> {
-                return filterCriteria.getValue() == null ? null : Long.parseLong(filterCriteriaValueStr);
-            }
-            case DATE_TIME -> {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(LOCAL_DATE_TIME_FORMAT);
-                return LocalDateTime.parse(filterCriteriaValueStr, formatter);
-            }
-            case BOOLEAN -> {
-                return filterCriteria.getValue() == null ? null : Boolean.valueOf(filterCriteriaValueStr);
-            }
-            case ENUM -> {
-                return filterCriteria.getValue() == null ? null : Enum.valueOf((Class<Enum>) filterCriteria.getValue().getClass(), filterCriteriaValueStr);
-            }
-            default -> {
-                int nestedLevel = StringUtils.countMatches(filterCriteria.getField(), ".");
-                if (nestedLevel == 0) {
-                    // Case not sensitive for normal field
-                    return filterCriteria.getValue() == null ? null : filterCriteriaValueStr.toUpperCase();
-                } else {
-                    // Case sensitive for nested field
-                    // TODO: Need to find a way to search case not sensitive for nested field
-                    return filterCriteria.getValue() == null ? null : filterCriteriaValueStr;
-                }
-            }
-        }
+    @SuppressWarnings("unchecked")
+    private static <Y extends Comparable<? super Y>> Predicate applyOperator(CriteriaBuilder builder, Expression<?> expression, Object value, SearchRequest.Filter filterCriteria) {
+        Expression<Y> typedExpression = (Expression<Y>) expression;
+
+        return switch (filterCriteria.getOperator()) {
+            case GREATER -> builder.greaterThan(typedExpression, (Y) value);
+            case LESS -> builder.lessThan(typedExpression, (Y) value);
+            case GREATER_EQUAL -> builder.greaterThanOrEqualTo(typedExpression, (Y) value);
+            case LESS_EQUAL -> builder.lessThanOrEqualTo(typedExpression, (Y) value);
+            case IN -> typedExpression.in((Set<Y>) value);
+            case LIKE, NOT_LIKE -> buildLikePredicate(builder, typedExpression, value, NOT_LIKE.equals(filterCriteria.getOperator()));
+            case NOT_EQUAL -> builder.notEqual(typedExpression, value);
+            default -> builder.equal(typedExpression, value);
+        };
     }
 
-    private <Y extends Comparable<? super Y>> Predicate handleOperator(CriteriaBuilder builder, Expression<? extends Y> expression, Y value) {
-        switch (filterCriteria.getOperator()) {
-            case GREATER:
-                return builder.greaterThan(expression, value);
-            case LESS:
-                return builder.lessThan(expression, value);
-            case GREATER_EQUAL: {
-                return builder.greaterThanOrEqualTo(expression, value);
-            }
-            case LESS_EQUAL: {
-                return builder.lessThanOrEqualTo(expression, value);
-            }
-            case IN: {
-                return expression.in((Set) value);
-            }
-            case LIKE: {
-                Expression<String> stringPath = builder.upper(expression.as(String.class));
-                if (filterCriteria.getValue() != null) {
-                    return builder.like(
-                            stringPath, "%" + filterCriteria.getValue().toString().toUpperCase() + "%");
-                } else {
-                    return builder.isNull(expression);
-                }
-            }
-            case NOT_LIKE: {
-                Expression<String> stringPath = builder.upper(expression.as(String.class));
-                if (filterCriteria.getValue() != null) {
-                    return builder.notLike(
-                            stringPath, "%" + filterCriteria.getValue().toString().toUpperCase() + "%");
-                } else {
-                    return builder.isNull(expression);
-                }
-            }
-            case NOT_EQUAL: {
-                if (filterCriteria.getValue() != null) {
-                    return builder.notEqual(expression, value);
-                } else {
-                    return builder.isNotNull(expression);
-                }
-            }
-            // EQUAL and default case
-            default: {
-                if (filterCriteria.getValue() != null) {
-                    return builder.equal(expression, value);
-                } else {
-                    return builder.isNull(expression);
-                }
-            }
-        }
+    private static Predicate buildLikePredicate(CriteriaBuilder builder, Expression<?> expression, Object value, boolean negate) {
+        Expression<String> stringExpression = builder.upper(expression.as(String.class));
+        Predicate likePredicate = builder.like(stringExpression, "%" + value.toString().toUpperCase() + "%");
+        return negate ? builder.not(likePredicate) : likePredicate;
     }
-
 }

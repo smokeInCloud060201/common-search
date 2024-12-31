@@ -1,16 +1,19 @@
 package vn.com.demo.commonsearch.worksite.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.com.demo.commonsearch.base.BaseEntity;
 
-@Table(name = "worksite")
 @Entity
+@Table(name = "worksite")
 @Getter
 @Setter
 public class Worksite extends BaseEntity {
     private String location;
 
-    private long worksiteNumber;
+    private String zone;
 }
