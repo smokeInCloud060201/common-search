@@ -5,23 +5,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import vn.com.demo.commonsearch.base.BaseEntity;
 import vn.com.demo.commonsearch.search.dto.SearchRequest;
 import vn.com.demo.commonsearch.search.manager.JoinManager;
 import vn.com.demo.commonsearch.search.manager.proxy.FieldEntityManagerProxy;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static vn.com.demo.commonsearch.constants.DateTimeConstants.LOCAL_DATE_TIME_FORMAT;
 import static vn.com.demo.commonsearch.search.dto.Operator.Comparison.IN;
 import static vn.com.demo.commonsearch.search.dto.Operator.Comparison.NOT_LIKE;
-import static vn.com.demo.commonsearch.search.dto.Type.TEXT;
 
 @Component
 @RequiredArgsConstructor
