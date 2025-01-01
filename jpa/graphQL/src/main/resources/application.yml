@@ -1,0 +1,21 @@
+server:
+  port: 8182
+spring:
+  application:
+    name: GraphQL searching
+  datasource:
+    url: jdbc:postgresql://localhost:5434/race
+    password: admin123
+    username: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  graphql:
+    graphiql:
+      enabled: true
+

@@ -1,0 +1,28 @@
+server:
+  port: 8181
+spring:
+  application:
+    name: Rest Base Searching
+  datasource:
+    url: jdbc:postgresql://localhost:5434/race
+    password: admin123
+    username: root
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder=TRACE:
+        orm:
+          jdbc:
+            bind: TRACE
