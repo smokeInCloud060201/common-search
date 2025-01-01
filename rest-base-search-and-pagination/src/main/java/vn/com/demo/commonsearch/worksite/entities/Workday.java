@@ -15,12 +15,16 @@ import vn.com.demo.commonsearch.base.BaseEntity;
 @Setter
 public class Workday extends BaseEntity {
 
+    @IncludeSearchKey
     private String tbm;
+
+    @IncludeSearchKey
+    private String inspection;
 
     private boolean isNightWork;
 
     @ManyToOne
-    @IncludeSearchKey(value = {"worksite.location"})
+    @IncludeSearchKey(value = {"location", "zone"})
     @JoinColumn(name = "worksite_id")
     private Worksite worksite;
 }

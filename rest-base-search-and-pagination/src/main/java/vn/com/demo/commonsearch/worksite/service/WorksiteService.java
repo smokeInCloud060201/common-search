@@ -31,8 +31,8 @@ public class WorksiteService implements CommandLineRunner {
     public Page<Worksite> searchWorksite(SearchRequest searchRequest) {
 
         Specification<Workday> workdaySpecification = searchSpecification.getAllSpecifications(searchRequest, Workday.class);
+        Pageable pageable = searchSpecification.getPageable(searchRequest);
 
-        Pageable pageable = PageRequest.of(0, 100);
         Page<Workday> workdays = workdayRepository.findAll(workdaySpecification, pageable);
 
         return null;
@@ -45,16 +45,29 @@ public class WorksiteService implements CommandLineRunner {
 
         List<SearchRequest.Filter> filterList = new ArrayList<>();
         filterList.add(SearchRequest.Filter.builder()
-                        .field("tbm")
-                        .value("tbm dummy")
-                        .operator(Operator.Comparison.EQUAL)
-                        .type(Type.TEXT)
+                        .field("worksite.isNightWork")
+                        .value("true")
+                        .operator(Operator.Comparison.NOT_EQUAL)
+                .build());
+        filterList.add(SearchRequest.Filter.builder()
+                .field("worksite.siteStatus")
+                .value("ACTIVE")
+                .operator(Operator.Comparison.EQUAL)
                 .build());
 
+        filterList.add(SearchRequest.Filter.builder()
+                .field("worksite.siteStatus")
+                .value(List.of("ACTIVE", "PENDING_APPROVAL"))
+                .operator(Operator.Comparison.IN)
+                .build());
 
         searchRequest.setFilterList(
                 filterList
         );
+        searchRequest.setSort(SearchRequest.Sort.builder()
+                        .field("worksite.createdAt")
+                        .asc(true)
+                .build());
         searchWorksite(searchRequest);
     }
 }

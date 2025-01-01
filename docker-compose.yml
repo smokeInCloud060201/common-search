@@ -13,17 +13,6 @@ services:
       POSTGRES_DATABASE: race
     volumes:
       - ./init-db:/docker-entrypoint-initdb.d
-  mssql:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: mssql_container
-    ports:
-      - "1433:1433"
-    environment:
-      MSSQL_SA_PASSWORD: "Avmmyenbd0!"
-      ACCEPT_EULA: "Y"
-    volumes:
-      - mssql_data:/var/opt/mssql
-
 volumes:
   mssql_data:
     driver: local
