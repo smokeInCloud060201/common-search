@@ -1,5 +1,6 @@
 package org.example.graphql.repository;
 
+import org.example.graphql.dto.StudentProjection;
 import org.example.graphql.entity.Student;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.Repository;
