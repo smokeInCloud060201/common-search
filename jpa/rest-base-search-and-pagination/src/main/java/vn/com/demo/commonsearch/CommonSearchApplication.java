@@ -12,8 +12,6 @@ import vn.com.demo.commonsearch.worksite.repository.WorksiteRepository;
 @EnableCaching
 @RequiredArgsConstructor
 public class CommonSearchApplication {
-	
-	private final WorksiteRepository repository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(CommonSearchApplication.class, args);
