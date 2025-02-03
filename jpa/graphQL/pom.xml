@@ -82,6 +82,11 @@
             <version>${query.dsl.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>${owasp.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -94,7 +99,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>generate-querydsl-sources</id>
@@ -103,10 +107,10 @@
                         </goals>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <enablePreview>true</enablePreview>
                             <annotationProcessors>
                                 <annotationProcessor>com.querydsl.apt.jpa.JPAAnnotationProcessor</annotationProcessor>
-                                <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+                                <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
+                                </annotationProcessor>
                             </annotationProcessors>
                             <annotationProcessorPaths>
                                 <path>
@@ -126,6 +130,22 @@
                             </annotationProcessorPaths>
                             <generatedSourcesDirectory>target/generated-sources/java</generatedSourcesDirectory>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${owasp.version}</version>
+                <configuration>
+                    <failBuildOnCVSS>100</failBuildOnCVSS>
+                    <failOnError>false</failOnError>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
