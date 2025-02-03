@@ -1,8 +1,8 @@
-package org.example.graphql.services;
+package vn.com.demo.graphql.services;
 
 
 import lombok.RequiredArgsConstructor;
-import org.example.graphql.repository.AccountRepository;
+import vn.com.demo.graphql.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
 @Service

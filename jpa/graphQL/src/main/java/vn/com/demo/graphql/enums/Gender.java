@@ -1,4 +1,4 @@
-package org.example.graphql.enums;
+package vn.com.demo.graphql.enums;
 
 public enum Gender {
     M,

@@ -1,4 +1,4 @@
-package org.example.graphql.dto;
+package vn.com.demo.graphql.dto;
 
 public interface StudentProjection {
     String getName();

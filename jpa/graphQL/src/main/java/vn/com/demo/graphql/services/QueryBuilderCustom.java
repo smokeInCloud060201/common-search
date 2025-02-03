@@ -1,4 +1,4 @@
-package org.example.graphql.services;
+package vn.com.demo.graphql.services;
 
 import com.querydsl.core.types.EntityPath;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;

@@ -1,38 +1,31 @@
-package org.example.graphql.entity;
+package vn.com.demo.graphql.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.graphql.enums.Gender;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Table(name = "students")
+@Table
 @Entity
 @Getter
 @Setter
-public class Student {
+public class Classes {
 
-    private String firstName;
+    private String className;
 
-    private String lastName;
-
-    private LocalDateTime dateOfBirth;
-
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private String teacherName;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +41,10 @@ public class Student {
 
     private boolean isDeleted;
 
-    @ManyToMany(mappedBy = "classesList")
-    private List<Classes> classesList;
+    @ManyToMany
+    @JoinTable(name = "classes_student",
+            joinColumns = @JoinColumn(name = "classes_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id"))
+    private List<Student> classesList;
+
 }

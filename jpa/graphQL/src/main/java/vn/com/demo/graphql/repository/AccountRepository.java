@@ -1,6 +1,6 @@
-package org.example.graphql.repository;
+package vn.com.demo.graphql.repository;
 
-import org.example.graphql.entity.Student;
+import vn.com.demo.graphql.entity.Student;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.Repository;
 import org.springframework.graphql.data.GraphQlRepository;
