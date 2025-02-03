@@ -22,9 +22,9 @@
     </modules>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<lombok.version>1.18.36</lombok.version>
-		<project.parent.spring.version>3.4.0</project.parent.spring.version>
+		<project.parent.spring.version>3.4.1</project.parent.spring.version>
 	</properties>
 
 </project>
