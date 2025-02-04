@@ -17,4 +17,22 @@
         <module>graphQL</module>
     </modules>
 
+    <properties>
+        <reflections.version>0.10.2</reflections.version>
+        <commons.lang.version>3.17.0</commons.lang.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

@@ -14,7 +14,10 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
+        format_sql: true'
+#  sql:
+#    init:
+#      schema-locations: db/seed/schema.sql
   graphql:
     graphiql:
       enabled: true

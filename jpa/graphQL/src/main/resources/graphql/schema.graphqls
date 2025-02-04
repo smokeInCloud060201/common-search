@@ -1,16 +1,33 @@
 type Query {
-  bookById(id: ID): Book
+  searchStudents(page: Int): SearchResultResponse
 }
 
-type Book {
-  id: ID
+type Student {
+  id: String
   name: String
-  pageCount: Int
-  author: Author
+  dateOfBirth: String
+  gender: String
 }
 
-type Author {
-  id: ID
-  firstName: String
-  lastName: String
+type Classes {
+  id: String
+  teacherName: String
+  className: String
+  studentList: [Student]
 }
+
+union SearchResult = Student | Classes
+
+interface SearchResultResponse {
+  data: [SearchResult]
+  metaData: MetaData
+  errorCode: String
+  errorMessage: String
+  timestamp: String
+}
+
+type MetaData {
+  page: Int,
+  size: Int,
+}
+
